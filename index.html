@@ -8,8 +8,8 @@
 </head>
 
 <body>
-    <button id="green">Green</button>
-    <button id="orange">Orange</button>
+    <!-- <button id="green">Green</button>
+    <button id="orange">Orange</button> -->
     <script>
         // document.getElementById("green")
         // .addEventListener("click", ()=>{
@@ -29,18 +29,26 @@
         // document.getElementById("green").onclick = clickHandler("green")
         // document.getElementById("orange").onclick = clickHandler("orange")
 
-        function makeCounter() {
-            let count = 0;
+        // function makeCounter() {
+        //     let count = 0;
 
-            return function () {
-                return ++count;
-            };
+        //     return function () {
+        //         return ++count;
+        //     };
+        // }
+
+        // const counter = makeCounter();
+        // console.log(counter()); // 1
+        // console.log(counter()); // 2
+        // console.log(counter()); // 3
+
+        // let s1 = String.fromCharCode(104,101,108,108,111)
+        // console.log("%s",s1)
+        function greet(){
+            console.log("Hello")
         }
+        greet()
 
-        const counter = makeCounter();
-        console.log(counter()); // 1
-        console.log(counter()); // 2
-        console.log(counter()); // 3
     </script>
 </body>
 

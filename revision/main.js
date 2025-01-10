@@ -1,8 +1,5 @@
-function greet(name){
-    console.log("Hello Ji",name)
+function fn(param){
+    console.log("is undefined ?", (param === undefined))
 }
-function parent(fn){
-    let name = "Abhi"
-    fn(name)
-}
-greet()
+fn("e")
+fn()
