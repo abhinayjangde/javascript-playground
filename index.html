@@ -4,51 +4,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>JavaScript Playground</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .playground-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 600px;
+        }
+
+        .code-section {
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .section-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-editor {
+            width: 100%;
+            height: 500px;
+            border: none;
+            padding: 20px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+            background: #fafafa;
+            color: #333;
+        }
+
+        .output-section {
+            background: #1e1e1e;
+            color: #f8f8f2;
+        }
+
+        .output-area {
+            height: 500px;
+            padding: 20px;
+            overflow-y: auto;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .run-btn {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .run-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .output-line {
+            margin-bottom: 8px;
+            padding: 2px 0;
+        }
+
+        .output-log {
+            color: #a8cc8c;
+        }
+
+        .output-error {
+            color: #f92672;
+            background: rgba(249, 38, 114, 0.1);
+            padding: 5px;
+            border-radius: 3px;
+        }
+
+        .output-warn {
+            color: #e6db74;
+        }
+
+        .examples-section {
+            grid-column: 1 / -1;
+            border-top: 1px solid #e0e0e0;
+            background: #f8f9fa;
+            padding: 20px;
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .example-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .example-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .example-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .example-desc {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .code-section {
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <!-- <button id="green">Green</button>
-    <button id="orange">Orange</button> -->
+    <div class="playground-container">
+        <div class="header">
+            <h1>🚀 JavaScript Playground</h1>
+            <p>Write, test, and experiment with JavaScript code in real-time</p>
+        </div>
+
+        <div class="main-content">
+            <div class="code-section">
+                <div class="section-header">
+                    💻 Code Editor
+                    <div>
+                        <button class="run-btn" onclick="runCode()">Run Code</button>
+                        <button class="clear-btn" onclick="clearOutput()">Clear Output</button>
+                    </div>
+                </div>
+                <textarea id="codeEditor" class="code-editor" placeholder="// Write your JavaScript code here...
+console.log('Hello, JavaScript Playground!');
+
+// Try some examples:
+const numbers = [1, 2, 3, 4, 5];
+const doubled = numbers.map(n => n * 2);
+console.log('Doubled numbers:', doubled);
+
+// Object destructuring
+const person = { name: 'John', age: 30 };
+const { name, age } = person;
+console.log(`Name: ${name}, Age: ${age}`);"></textarea>
+            </div>
+
+            <div class="output-section">
+                <div class="section-header" style="background: #2d2d2d; color: white; border-color: #444;">
+                    📊 Output Console
+                </div>
+                <div id="outputArea" class="output-area">
+                    <div class="output-line output-log">// Console output will appear here...</div>
+                    <div class="output-line output-log">// Click "Run Code" to execute your JavaScript</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="examples-section">
+            <h3>📚 Quick Examples</h3>
+            <div class="examples-grid">
+                <div class="example-card" onclick="loadExample('closure')">
+                    <div class="example-title">Closures</div>
+                    <div class="example-desc">Learn about JavaScript closures and scope</div>
+                </div>
+                <div class="example-card" onclick="loadExample('objects')">
+                    <div class="example-title">Objects & Destructuring</div>
+                    <div class="example-desc">Work with objects and destructuring patterns</div>
+                </div>
+                <div class="example-card" onclick="loadExample('strings')">
+                    <div class="example-title">String Manipulation</div>
+                    <div class="example-desc">String methods and transformations</div>
+                </div>
+                <div class="example-card" onclick="loadExample('async')">
+                    <div class="example-title">Async/Await</div>
+                    <div class="example-desc">Asynchronous JavaScript with fetch API</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // document.getElementById("green")
-        // .addEventListener("click", ()=>{
-        //     document.body.style.backgroundColor = "green"
-        // })
-        // document.getElementById("orange")
-        // .addEventListener("click", ()=>{
-        //     document.body.style.backgroundColor = "orange"
-        // })
+        // Console output capture
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn
+        };
 
+        let outputBuffer = [];
 
-        // function clickHandler(color){
-        //     return function(){
-        //         document.body.style.backgroundColor = `${color}`
-        //     }
-        // }
-        // document.getElementById("green").onclick = clickHandler("green")
-        // document.getElementById("orange").onclick = clickHandler("orange")
+        function captureConsole() {
+            console.log = (...args) => {
+                outputBuffer.push({ type: 'log', content: args.join(' ') });
+                originalConsole.log(...args);
+            };
 
-        // function makeCounter() {
-        //     let count = 0;
+            console.error = (...args) => {
+                outputBuffer.push({ type: 'error', content: args.join(' ') });
+                originalConsole.error(...args);
+            };
 
-        //     return function () {
-        //         return ++count;
-        //     };
-        // }
+            console.warn = (...args) => {
+                outputBuffer.push({ type: 'warn', content: args.join(' ') });
+                originalConsole.warn(...args);
+            };
+        }
 
-        // const counter = makeCounter();
-        // console.log(counter()); // 1
-        // console.log(counter()); // 2
-        // console.log(counter()); // 3
+        function restoreConsole() {
+            console.log = originalConsole.log;
+            console.error = originalConsole.error;
+            console.warn = originalConsole.warn;
+        }
 
-        // let s1 = String.fromCharCode(104,101,108,108,111)
-        // console.log("%s",s1)
-        // function greet(){
-        //     console.log("Hello")
-        // }
-        // greet()
+        function runCode() {
+            const code = document.getElementById('codeEditor').value;
+            const outputArea = document.getElementById('outputArea');
+            
+            // Clear previous output
+            outputBuffer = [];
+            
+            // Capture console output
+            captureConsole();
+            
+            try {
+                // Execute the code
+                eval(code);
+                
+                // Display output
+                if (outputBuffer.length === 0) {
+                    outputBuffer.push({ type: 'log', content: '// Code executed successfully (no console output)' });
+                }
+            } catch (error) {
+                outputBuffer.push({ type: 'error', content: `Error: ${error.message}` });
+            } finally {
+                restoreConsole();
+            }
+            
+            // Update output area
+            updateOutput();
+        }
 
+        function updateOutput() {
+            const outputArea = document.getElementById('outputArea');
+            outputArea.innerHTML = '';
+            
+            outputBuffer.forEach(output => {
+                const div = document.createElement('div');
+                div.className = `output-line output-${output.type}`;
+                div.textContent = output.content;
+                outputArea.appendChild(div);
+            });
+            
+            // Scroll to bottom
+            outputArea.scrollTop = outputArea.scrollHeight;
+        }
+
+        function clearOutput() {
+            document.getElementById('outputArea').innerHTML = '<div class="output-line output-log">// Output cleared...</div>';
+        }
+
+        // Example loader
+        const examples = {
+            closure: `// JavaScript Closures Example
+function makeCounter() {
+    let count = 0;
+    
+    return function() {
+        return ++count;
+    };
+}
+
+const counter = makeCounter();
+console.log('Counter 1:', counter()); // 1
+console.log('Counter 2:', counter()); // 2
+console.log('Counter 3:', counter()); // 3
+
+// Another counter instance
+const counter2 = makeCounter();
+console.log('Counter2 1:', counter2()); // 1
+console.log('Counter2 2:', counter2()); // 2`,
+
+            objects: `// Objects and Destructuring Example
+const user = {
+    name: "Abhi",
+    "full name": "Abhinay Jangde",
+    age: 22,
+    location: "Mungeli",
+    email: "abhi@codebhaiya.com",
+    isLoggedIn: false,
+    lastLoginDays: ["Monday", "Saturday"]
+};
+
+console.log('User info:', user);
+console.log('Full name:', user["full name"]);
+
+// Object destructuring
+const { name, age, email } = user;
+console.log(\`Name: \${name}, Age: \${age}, Email: \${email}\`);
+
+// Object merging
+const obj1 = { a: "1", b: "2" };
+const obj2 = { c: "3", d: "4" };
+const mergedObj = { ...obj1, ...obj2 };
+console.log('Merged object:', mergedObj);`,
+
+            strings: `// String Manipulation Example
+const text = "JavaScript";
+console.log('Original:', text);
+
+// String reversal
+const reversed = text.split("").reverse().join("");
+console.log('Reversed:', reversed);
+
+// String methods
+console.log('Uppercase:', text.toUpperCase());
+console.log('Lowercase:', text.toLowerCase());
+console.log('Length:', text.length);
+console.log('Char at index 4:', text.charAt(4));
+
+// String from char codes
+const greeting = String.fromCharCode(104, 101, 108, 108, 111);
+console.log('From char codes:', greeting);
+
+// Template literals
+const name = "World";
+console.log(\`Hello, \${name}!\`);`,
+
+            async: `// Async/Await and Fetch Example
+const apiUrl = 'https://jsonplaceholder.typicode.com/posts/1';
+
+// Using fetch with promises
+console.log('Fetching data with promises...');
+fetch(apiUrl)
+    .then(response => response.json())
+    .then(data => {
+        console.log('Post title:', data.title);
+        console.log('Post body:', data.body.substring(0, 50) + '...');
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+    });
+
+// Using async/await (commented out as it needs to be in an async function)
+/*
+async function fetchData() {
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        console.log('Async data:', data);
+    } catch (error) {
+        console.error('Async error:', error);
+    }
+}
+fetchData();
+*/
+
+console.log('Note: The fetch request is asynchronous and may take a moment to complete.');`
+        };
+
+        function loadExample(exampleName) {
+            const code = examples[exampleName];
+            if (code) {
+                document.getElementById('codeEditor').value = code;
+                clearOutput();
+            }
+        }
+
+        // Auto-run initial code on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                runCode();
+            }, 500);
+        });
     </script>
 </body>
 
